@@ -35,8 +35,7 @@ edi_map <- get_stadiamap(bbox, zoom = 14, maptype = "stamen_toner_lite")
 ```
 Workers' Observatory data: Edinburgh riders collective risk mapping project
 
-I downloaded the kml data straight from the Google My Maps I set up (you can save it as kml, rather than kmz)
-https://www.google.com/maps/d/u/0/edit?mid=1i2r27xzXrmzmlNSOeNPirnkJS5h43qw&ll=55.98838161940742%2C-3.198698398629496&z=12
+During our first mapping workshop, Edinburgh food delivery riders discussed risks and issues they faced at work. They worked together to identify different risks and then started reporting them on the collaborative Edinburgh map I had set up using Google My Maps. I downloaded the kml data straight from the Google My Maps (Google My Maps allows you to save the data as kml, rather than kmz).
 When designing the map with the riders, we have split things into different kinds of risks (accidents, thefts/robbery, attacks + bad restaurants, other risks)
 
 ```{r}
