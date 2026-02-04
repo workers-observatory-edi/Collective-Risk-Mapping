@@ -1,0 +1,230 @@
+---
+title: "Edinburgh Food delivery Riders Collective Risk Mapping Project"
+subtitle: "The Workers' Observatory"
+author: "Marion Lieutaud"
+date: "2026-01-27"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE,
+                      warning = FALSE,
+                      message = FALSE)
+```
+
+```{r}
+library(dplyr, warn.conflicts = FALSE)
+library(ggplot2)
+library(kableExtra)
+```
+
+## Data
+For the background data of to map Edinburgh, I use Stadia Maps via the ggmap package.
+see: \href{https://dkahle.r-universe.dev/ggmap}{https://dkahle.r-universe.dev/ggmap}.
+Registration is free and gives access to the API, through which you can download map tiles.
+```{r}
+library("ggmap")
+# registering stadia API key
+register_stadiamaps("MY-API-KEY", write = FALSE)
+
+# Edinburgh coordinates
+bbox <- c(left = -3.30, bottom = 55.91, right = -3.10, top = 55.99)
+edi_map <- get_stadiamap(bbox, zoom = 14, maptype = "stamen_toner_lite")
+
+# ggmap(edi_map)
+```
+Workers' Observatory data: Edinburgh riders collective risk mapping project
+
+I downloaded the kml data straight from the Google My Maps I set up (you can save it as kml, rather than kmz)
+https://www.google.com/maps/d/u/0/edit?mid=1i2r27xzXrmzmlNSOeNPirnkJS5h43qw&ll=55.98838161940742%2C-3.198698398629496&z=12
+When designing the map with the riders, we have split things into different kinds of risks (accidents, thefts/robbery, attacks + bad restaurants, other risks)
+
+```{r}
+# turn kml data into tidy data using tidykml
+library(tidykml)
+library(stringr)
+
+# accident data
+accidents_points <- kml_points("accidents.kml") %>%
+  mutate(description_full = tolower(paste(name, description))) %>%
+  select(description_full, longitude, latitude)
+
+#use stringr to identify all instances where description_full includes the string "stole" 
+accidents_points_data <- accidents_points %>%
+  mutate(theft = ifelse(str_detect(description_full, "stole"), 1, 0),
+         attack = ifelse(str_detect(description_full, "attack|abuse|harass"), 1, 0)) %>%
+  mutate(accident = ifelse(theft == 0 & attack == 0, 1, 0))
+```
+
+```{r}
+# attack data
+attack_points <- kml_points("attacks.kml") %>%
+  mutate(description_full = tolower(paste(name, description))) %>%
+  select(description_full, longitude, latitude)
+
+#use stringr to identify all instances where description_full includes the string "stole" 
+attack_points_data <- attack_points %>%
+  mutate(theft = ifelse(str_detect(description_full, "bike stolen"), 1, 0)) %>%
+  mutate(attack = ifelse(theft == 0, 1, 0),
+         accident = 0)
+```
+
+```{r}
+# theft/robbery data
+theft_point <- kml_points("theft.kml") %>%
+  mutate(description_full = tolower(paste(name, description))) %>%
+  select(description_full, longitude, latitude)
+
+#use stringr to identify all instances where description_full includes the string "stole" 
+theft_points_data <- theft_point %>%
+  mutate(attack = ifelse(str_detect(description_full, "robbery"), 1, 0)) %>%
+  mutate(theft = ifelse(attack == 0, 1, 0),
+         accident = 0)
+```
+
+
+```{r bind}
+hazard_data <- bind_rows(accidents_points_data, attack_points_data, theft_points_data) %>%
+  rename(lon = longitude,
+         lat = latitude)
+```
+
+```{r}
+accidents_plot <- hazard_data %>%
+  filter(accident == 1)
+```
+
+## Analysis
+```{r}
+library("patchwork")
+library("ggdensity")
+library("geomtextpath")
+
+accident_map <- ggmap(edi_map) +
+  geom_point(data = accidents_plot, color = "red")
+```
+
+
+```{r}
+hdr_map <- ggmap(edi_map) + 
+  geom_hdr(
+    aes(lon, lat, fill = after_stat(probs)), data = accidents_plot,
+    alpha = .5
+  ) + #+
+  #geomtextpath::geom_labeldensity2d(
+    #aes(lon, lat, level = after_stat(probs)),
+    #data = accidents_plot, stat = "hdr_lines", size = 3, boxcolour = NA
+  #) +
+  scale_fill_brewer(palette = "YlOrRd") +
+  theme(legend.position = "none")
+
+(accident_map + hdr_map + 
+   plot_annotation(title = "Accidents reported by food delivery riders",
+                   caption = "Data source: Riders Hazard Mapping project (Google My Maps)\nVisualization: Marion Lieutaud | Workers' Observatory")) & 
+  theme(axis.title = element_blank(), 
+        axis.text = element_blank(), 
+        axis.ticks = element_blank(),
+        plot.caption = element_text(size = 6))
+```
+
+```{r, include=FALSE}
+hazard_data %>%
+  filter(accident == 1) %>%
+  select(description_full) %>%
+  kable()
+```
+
+```{r}
+theft_plot <- hazard_data %>%
+  filter(theft == 1) 
+
+theft_map <- ggmap(edi_map) +
+  geom_point(data = theft_plot, color = "blue")
+```
+
+```{r}
+hdr_theft_map <- ggmap(edi_map) + 
+  geom_hdr(
+    aes(lon, lat, fill = after_stat(probs)), data = theft_plot,
+    alpha = .5
+  ) + 
+  scale_fill_brewer(palette = "GnBu") +
+  theme(legend.position = "none")
+
+(theft_map + hdr_theft_map + 
+   plot_annotation(title = "Thefts faced by food delivery riders",
+                   caption = "Data source: Riders Hazard Mapping project (Google My Maps)\nVisualization: Marion Lieutaud | Workers' Observatory")) & 
+  theme(axis.title = element_blank(), 
+        axis.text = element_blank(), 
+        axis.ticks = element_blank(),
+        plot.caption = element_text(size = 6))
+```
+
+```{r, include = FALSE}
+hazard_data %>%
+  filter(theft == 1) %>%
+  select(description_full) %>%
+  kable()
+```
+
+```{r}
+# scatterplot
+attack_plot <- hazard_data %>%
+  filter(attack == 1) 
+
+attack_map <- ggmap(edi_map) +
+  geom_point(data = attack_plot, color = "purple")
+```
+
+
+```{r}
+# density map
+hdr_attack_map <- ggmap(edi_map) + 
+  geom_hdr(
+    aes(lon, lat, fill = after_stat(probs)), data = attack_plot,
+    alpha = .5
+  ) + 
+  scale_fill_brewer(palette = "Purples") +
+  theme(legend.position = "none")
+```
+
+
+```{r}
+(attack_map + hdr_attack_map + 
+   plot_annotation(title = "Attacks against food delivery riders",
+                   caption = "Data source: Riders Hazard Mapping project (Google My Maps)\nVisualization: Marion Lieutaud | Workers' Observatory")) & 
+  theme(axis.title = element_blank(), 
+        axis.text = element_blank(), 
+        axis.ticks = element_blank(),
+        plot.caption = element_text(size = 6))
+```
+```{r, include=FALSE}
+hazard_data %>%
+  filter(attack == 1) %>%
+  select(description_full) %>%
+  kable()
+```
+
+
+
+```{r}
+ggmap(edi_map) +
+  geom_point(data = accidents_plot, color = "red") +
+  geom_point(data = theft_plot, color = "blue") +
+  geom_point(data = attack_plot, color = "purple") +
+  geom_hdr(
+    aes(lon, lat, fill = after_stat(probs)), data = hazard_data,
+    alpha = .5
+  ) + 
+  scale_fill_brewer(palette = "OrRd") +
+  theme(legend.position = "none",
+        axis.title = element_blank(), 
+        axis.text = element_blank(), 
+        axis.ticks = element_blank(),
+        plot.caption = element_text(size = 6)) 
+```
+
+## Some additional useful resources
+\href{https://sarahlistabarth.github.io/blog/posts/opening-kmz-files/}{https://sarahlistabarth.github.io/blog/posts/opening-kmz-files/}
+\newline
+\href{https://ratey-atuwa.github.io/Learn-R-web/google-kml.html}{https://ratey-atuwa.github.io/Learn-R-web/google-kml.html}
