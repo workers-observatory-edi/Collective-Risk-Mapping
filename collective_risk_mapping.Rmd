@@ -1,10 +1,27 @@
 ---
-title: "Edinburgh Food delivery Riders Collective Risk Mapping Project"
+title: "Guidebook - Edinburgh Food delivery Riders Collective Risk Mapping Project"
 subtitle: "The Workers' Observatory"
 author: "Marion Lieutaud"
 date: "2026-01-27"
 output: pdf_document
 ---
+
+
+# Why collective mapping for organising?
+
+# What to map
+The first step is to have a collective conversation to identify what it is that would be useful for us to map. With food delivery gig work in Edinburgh, a big topic is risk: many riders have experiences of getting their bikes stolen, being hit by cars, or being attacked while on the job. Some of these stories have made the rounds and everyone is aware that there are dangers involved. At the same time, politicians in the UK and in Edinburgh are talking a lot about food delivery risks - but what they usually mean is risks they say are _caused_ by riders (because of e.g. reckless driving); they never talk of risks _faced_ by riders, and no data is collected on accidents that distinguish gig workers who were injured while working delivery or private rides. As workers, we know that these things happen and we often have a good sense of which areas are riskier. But beyond our intuition and the information we get from talking to other riders, we don't have data to back us up and help us show how often and where and what kind of risks riders encounter in the city.
+
+It is never possible to map everything: we need to decide what is most important, and we need to agree on some categories that make sense to us - even if they will lose some of the details of the stories we want to tell. So firstly we need to have a collective space and a conversation amongst workers for us to identify and decide what those important categories are that we want to map. In the case of Edinburgh food delivery riders, we landed on 1/ accidents, 2/thefts (including stolen bikes and stolen delivery food) and 3/attacks. We also thought it could be good to map bad restaurants - those that make riders wait a lot or don't treat riders with respect.
+
+# How to map: 
+It's possible to create a collective map just with some post-its and an actual paper map. If we are all in the room together, we can write a little description of what happened to us on post-its of different colours (for different risk categories) and stick them to the map. But if we want to scale that up to a digital tool that more people can use and that can help us see and collect more spatial data, then we need a different approach. 
+
+We used Google My Maps for this; it's a simple, free tool and only requires a Google account. In an ideal world, it would be better not to use Google, and we may find other and better ways to do this in the future. But this is what we had for this. Google My Maps allows you to create your own map (in our case, Edinburgh) and to add your own pins to the map. You can create different categories of pins (in our case: "accidents", "thefts", "attacks", "bad restaurants" and "other shit that happened"), and you can use the "share link" option to make your collaborative map available to others, who can then add more pins. 
+
+#\includegraphics[width = \textwidth]{google-my-map-WO.png}
+
+
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE,
@@ -23,9 +40,18 @@ For the background data of to map Edinburgh, I use Stadia Maps via the ggmap pac
 see: \href{https://dkahle.r-universe.dev/ggmap}{https://dkahle.r-universe.dev/ggmap}.
 Registration is free and gives access to the API, through which you can download map tiles.
 ```{r}
+# use command usethis::edit_r_environ to see and edit your .Renviron files
+
 library("ggmap")
 # registering stadia API key
-register_stadiamaps("MY-API-KEY", write = FALSE)
+register_stadiamaps(Sys.getenv("MY_API_KEY"), write = FALSE)
+# to register your API key into your system environment, you will need to use the package {usethis} and {rscorecard}. You can also just hardcode it into your code directly above (instead of 'MY_API_KEY", just copy-paste the content of your API key directly) but that's not best practice, and you won't be able to share your code.
+
+#library(rscorecard)
+#sc_keys(Sys.getenv("MY_API_KEY"))
+
+
+# TO DO: add a path to google my map data in the .Renviron file so you don't hardcode that data or the data path
 
 # Edinburgh coordinates
 bbox <- c(left = -3.30, bottom = 55.91, right = -3.10, top = 55.99)
@@ -44,7 +70,7 @@ library(tidykml)
 library(stringr)
 
 # accident data
-accidents_points <- kml_points("accidents.kml") %>%
+accidents_points <- kml_points(Sys.getenv(paste0(filepath_ggmaps_WO),"accidents.kml")) %>%
   mutate(description_full = tolower(paste(name, description))) %>%
   select(description_full, longitude, latitude)
 
