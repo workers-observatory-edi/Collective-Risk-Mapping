@@ -20,7 +20,6 @@ It's possible to create a collective map just with some post-its and an actual p
 
 We used Google My Maps for this; it's a simple, free tool and only requires a Google account. In an ideal world, it would be better not to use Google, and we may find other and better ways to do this in the future. But this is what we had for this. Google My Maps allows you to create your own map (in our case, Edinburgh) and to add your own pins to the map. You can create different categories of pins (in our case: "accidents", "thefts", "attacks", "bad restaurants" and "other shit that happened"), and you can use the "share link" option to make your collaborative map available to others, who can then add more pins.
 
-how to include images
 
 ![google my maps: collaborative risk mapping](google-my-maps-WO.png)
 
