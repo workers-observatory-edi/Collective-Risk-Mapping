@@ -1,6 +1,6 @@
 ---
-title: "Guidebook - Edinburgh Food delivery Riders Collective Risk Mapping Project"
-subtitle: "The Workers' Observatory"
+title: "Guidebook - Collective Risk Mapping Project: Edinburgh Delivery riders and London Uber drivers"
+subtitle: "The Workers' Observatory & IWGB"
 author: "Marion Lieutaud"
 date: "2026-01-27"
 output: pdf_document
@@ -10,7 +10,7 @@ output: pdf_document
 
 # What to map
 
-The first step is to have a collective conversation to identify what it is that would be useful for us to map. With food delivery gig work in Edinburgh, a big topic is risk: many riders have experiences of getting their bikes stolen, being hit by cars, or being attacked while on the job. Some of these stories have made the rounds and everyone is aware that there are dangers involved. At the same time, politicians in the UK and in Edinburgh are talking a lot about food delivery risks - but what they usually mean is risks they say are *caused* by riders (because of e.g. reckless driving); they never talk of risks *faced* by riders, and no data is collected on accidents that distinguish gig workers who were injured while working delivery or private rides. As workers, we know that these things happen and we often have a good sense of which areas are riskier. But beyond our intuition and the information we get from talking to other riders, we don't have data to back us up and help us show how often and where and what kind of risks riders encounter in the city.
+The first step is to have a collective conversation to identify what it is that would be useful for us to map. With food delivery gig work in Edinburgh, a big topic is risk: many riders have experiences of getting their bikes stolen, being hit by cars, or being attacked while on the job. Some of these stories have made the rounds and everyone is aware that there are dangers involved. At the same time, politicians in the UK and in Edinburgh are talking a lot about food delivery risks - but what they usually mean is risks they say are *caused* by riders (because of e.g. reckless driving); they never talk of risks *faced* by riders. No data is collected on accidents that could allow us to identify gig workers who were injured while working delivery or private rides. As workers, we know that these things happen and we often have a good sense of which areas are riskier. But beyond our intuition and the information we get from talking to other riders, we don't have data to back us up and help us show how often and where and what kind of risks riders encounter in the city.
 
 It is never possible to map everything: we need to decide what is most important, and we need to agree on some categories that make sense to us - even if they will lose some of the details of the stories we want to tell. So firstly we need to have a collective space and a conversation amongst workers for us to identify and decide what those important things are that we want to map. In the case of Edinburgh food delivery riders, we landed on three categories: 1/ accidents, 2/thefts (including stolen bikes and stolen delivery food) and 3/attacks. We also thought it could be good to map bad restaurants - those that make riders wait a lot or don't treat riders with respect.
 
@@ -38,7 +38,7 @@ library(kableExtra)
 
 ## Data
 
-For the background data of to map Edinburgh, I use Stadia Maps via the ggmap package. see: \href{https://dkahle.r-universe.dev/ggmap}{https://dkahle.r-universe.dev/ggmap}. Registration is free and gives access to the API, through which you can download map tiles.
+For the background map for Edinburgh or London, we can use Stadia Maps via the ggmap package. see: \href{https://dkahle.r-universe.dev/ggmap}{https://dkahle.r-universe.dev/ggmap}. Registration is free and gives access to the API, through which you can download map tiles.
 
 ```{r}
 # use command usethis::edit_r_environ to see and edit your .Renviron files
@@ -119,9 +119,9 @@ accidents_plot <- hazard_data %>%
   filter(accident == 1)
 ```
 
-## Analysis
 
-```{r}
+
+```{r Analysis}
 library("patchwork")
 library("ggdensity")
 library("geomtextpath")
@@ -245,6 +245,43 @@ ggmap(edi_map) +
         axis.ticks = element_blank(),
         plot.caption = element_text(size = 6)) 
 ```
+
+## Template mapping workshop structure (IWGB Drivers Branch draft)
+
+\begin{itemize}
+  \item Ice breakers (15 min)
+  \item General discussion (1.5h)
+  \begin{itemize}
+    \item What are the risks you face at work?
+    \item Where do they happen? What areas of the city feel safe/unsafe? Why?
+    \item Break-outs to discuss specific risks (e.g. accidents, thefts, attacks) and to identify categories of risks that make sense to workers. Prepare post-its with specific events and spaces.
+    \item Physical mapping (paper map and post-its)
+    \item Discussion of the paper map and main mapping categories: what is most important to map? What are the main dangers? What mapping information would be useful for organising?
+    \end{itemize}
+  \item Break (15 min)
+  \item Online mapping: data infrastructure and design (1.5h)
+  \begin{itemize}
+    \item Why online mapping? Why scaling up?
+    \item Introduction to the online mapping tool (e.g. Google My Maps)
+    \item collective agreement on reporting categories and map design
+    \item Workers individually report the various events/risks they have faced
+    \item Visualisation and open discussion among workers of the results: what landscape of risks and support are we seeing emerging? What might that mean for us?  Is this what you expected? What are the pressure points?
+    \item Map as organising tool - agreement on next steps - Now, you use this to find other riders that may see this as useful. Connect it with what´s happening in Edinburgh.
+    \end{itemize}
+\end{itemize}
+
+## Outputs
+
+By the end of the workshop, we have a reporting tool that is a useful one for workers, that they have contributed to design and that they are familiar using. We have agreement to use it to engage with other workers and get other folks to use it, and agreement to touch base in 1-2 months and come back with the mapping data results and visualisations. 
+
+
+## Potential problems
+
+What will we do if we have a mix of delivery riders and Uber drivers? We can split the categories to have a more complex map.
+If we have a really split room, we can split in two and bringing them together, and check what risks are facing each group.
+
+
+
 
 ## Some additional useful resources
 
