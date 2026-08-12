@@ -1,6 +1,6 @@
 ---
-title: "Guidebook - Edinburgh Food delivery Riders Collective Risk Mapping Project"
-subtitle: "The Workers' Observatory"
+title: "Collective risk mapping example - Edinburgh Food delivery Riders"
+subtitle: "Supported by the Workers Observatory"
 author: "Marion Lieutaud"
 date: "2026-01-27"
 output: pdf_document
